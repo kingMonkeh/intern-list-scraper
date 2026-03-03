@@ -31,11 +31,13 @@ const target_companies = [
 ];
 
 function App() {
-  const [jobs, setJobs] = useState([])
+  const [us_jobs, setUSJobs] = useState([])
+  const [canada_jobs, setCanadaJobs] = useState([])
+  const [displayCanada, setDisplayCanada] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
-      const url = "/api/swan/mini-sites/list?position=0&count=100";      
+      const url = "/api/swan/mini-sites/list?position=0&count=500";      
       const payload = {
         category: "intern:us:swe",
         company: target_companies
@@ -51,10 +53,25 @@ function App() {
         });
 
         const data = await response.json();
+
+        const canada_payload = {
+        category: "intern:ca:swe",
+        company: target_companies
+      };
+        const canada_response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(canada_payload)
+        });
+
+        const canada_data = await canada_response.json();
+        setCanadaJobs(canada_data.result?.jobList || [])
         
         // If the API returns a list, we store it in state
         // Assuming the response structure has a list under a key like 'items'
-        setJobs(data.result.jobList || []); 
+        setUSJobs(data.result?.jobList || []); 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -63,21 +80,26 @@ function App() {
     fetchData();
   }, []);
 
+  console.log(us_jobs[0])
+
+  const currentJobs = displayCanada ? canada_jobs : us_jobs;
+  
   return (
     <>
     <div className="flex-col flex gap-4">
-      {jobs
+      <button onClick = {() => {setDisplayCanada(!displayCanada)}}>Show {displayCanada ? "US" : "Canada"}</button>
+      {currentJobs
         .filter((job) => target_companies.includes(job.properties.company))
         .filter((job) => !(job.properties.title).includes("PhD"))
         .map((job) => (
-          <JobPosting 
-            key={job.jobId} 
+          <JobPosting  
             title={job.properties.title}
             company={job.properties.company}
             date={job.postedAt}
             id={job.jobId}
           />
-      ))}
+      ))
+      }
     </div>
     </>
   )
