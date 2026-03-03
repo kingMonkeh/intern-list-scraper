@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import JobPosting from './components/posting';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 
 const target_companies = [
