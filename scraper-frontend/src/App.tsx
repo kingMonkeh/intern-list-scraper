@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import JobPosting from './components/posting';
+import { Analytics } from "@vercel/analytics/next"
+
 
 const target_companies = [
   "Anthropic", "OpenAI", "Hudson River Trading", "Jane Street", "Deepmind", 
@@ -87,6 +89,7 @@ function App() {
   return (
     <>
     <div className="flex-col flex gap-4">
+      <Analytics></Analytics>
       <button onClick = {() => {setDisplayCanada(!displayCanada)}}>Show {displayCanada ? "US" : "Canada"}</button>
       {currentJobs
         .filter((job) => target_companies.includes(job.properties.company))
